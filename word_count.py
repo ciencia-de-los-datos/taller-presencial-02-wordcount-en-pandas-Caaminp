@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """Taller evaluable"""
 
 import glob
@@ -71,3 +72,78 @@ if __name__ == "__main__":
         "input",
         "output.txt",
     )
+=======
+"""Taller evaluable"""
+
+import glob
+
+import pandas as pd
+
+
+def load_input(input_directory):
+    """Load text files in 'input_directory/'"""
+    
+    filenames=glob.glob(f"{input_directory}/*.txt")
+    dataframes=[
+        pd.read_csv(filename, sep="\t", header=None, names=["text"])
+        for filename in filenames
+    ]
+    concatenated_df=pd.concat(dataframes, ignore_index=True)
+    return concatenated_df
+
+df= load_input("input")
+print(df)
+
+
+def clean_text(dataframe):
+    """Text cleaning"""
+
+    dataframe=dataframe.copy()
+    dataframe["text"]=dataframe["text"].str.lower()
+    dataframe["text"]=dataframe["text"].str.replace(".","")
+    dataframe["text"]=dataframe["text"].str.replace(",","")
+
+    return dataframe
+
+
+def count_words(dataframe):
+    
+    dataframe=dataframe.copy()
+    dataframe["text"]=dataframe["text"].str.split()
+    dataframe=dataframe.explode("text")
+    dataframe ["count"]=1
+    dataframe = dataframe.groupby("text").agg({"count":"sum"})
+    return dataframe
+
+def count_words_(dataframe):
+    
+    dataframe=dataframe.copy()
+    dataframe["text"]=dataframe["text"].str.split()
+    dataframe=dataframe.explode("text")
+    dataframe = dataframe["text"].value_counts()
+    return dataframe
+
+def save_output(dataframe, output_filename):
+    """Save output to a file."""
+    
+    dataframe.to_csv(output_filename, sep="\t", index=True, header=False)
+
+
+# Escriba la función job, la cual orquesta las funciones anteriores.
+#
+def run(input_directory, output_filename):
+    """Call all functions."""
+
+    df=load_input(input_directory)
+    df=clean_text(df)
+    df=count_words_(df)
+    save_output(df,output_filename)
+    print (df)
+
+
+if __name__ == "__main__":
+    run(
+        "input",
+        "output.txt",
+    )
+>>>>>>> d4475411adf8239e5f211bab20b5a3908dc0f487
